@@ -12,6 +12,8 @@ public:
     FileLoader();
 
     std::vector<std::tuple<std::vector<std::vector<double>>, int>> loadPatterns();
+
+    std::vector<std::tuple<std::vector<std::vector<double>>, int>> patternsLoaded;
 };
 
 #endif // FILELOADER_HPP

@@ -41,8 +41,7 @@ std::tuple<std::vector<std::vector<double>>, int> Cepstrum::CalculateCepstrum(st
     Cepstrum::calculateCxMatrix(signal, Mlen, Mstep, Nc, Np);
 
     std::vector<std::vector<double>> Cwz; //One element of Cwzr - so Cwz is cepstrum array for one pattern
-    std::vector<std::vector<std::vector<double>>> Cwzr = Cepstrum::extractCwzrFromPatterns(patterns);
-    std::vector<int> Nwzr = Cepstrum::extractNwzrFromCwzr(Cwzr); //Vector of number of rows in Cwz
+
     int Nframes; //Number of rows of Cwz -> that means one element of Cwzr
 
 
@@ -371,62 +370,6 @@ int Cepstrum::dtw(std::vector<std::vector<double>> Cx, std::vector<std::vector<s
         std::vector<double> down(Ns);
         std::vector<double> up(Ns);
 
-
-        std::ofstream myfile ("example.txt");
-        if (myfile.is_open())
-        {
-            //tg
-            myfile << "tg: \n";
-            myfile << tg << '\n';
-
-            //Q
-            myfile << "Q \n";
-            myfile << Q << 'n';
-
-            //Nw
-            myfile << "Nw \n";
-            myfile << Nw << '\n';
-
-            //down
-            myfile << "down \n";
-            for (int i = 0; i < down.size(); ++i)
-            {
-                myfile << down[i] << '\n';
-            }
-
-            //up
-            myfile << "up \n";
-            for (int i = 0; i < down.size(); ++i)
-            {
-                myfile << down[i] << '\n';
-            }
-
-            //d
-            myfile << "boost::numeric::ublas::matrix<double> d \n";
-
-            //Cwzr
-            myfile << "Cwzr \n";
-            for (int c = 0; c < Cwzr.size(); ++c)
-            {
-                myfile << "Cwzr" << c << "\n";
-                auto cMat = Cwzr[c];
-                for (int i = 0; i < cMat.size(); ++i)
-                {
-                    auto cVec = cMat[i];
-                    for (int j = 0; j < cVec.size(); ++j)
-                    {
-                        myfile << cVec[j] << ';';
-                    }
-                }
-                myfile << "\n";
-            }
-            myfile.close();
-        }
-        else std::cout << "Unable to open file";
-
-
-        std::cout << "Skonczylem pisac do pliku";
-
         for (int ns = 1; ns < Ns + 1; ++ns)
 		{
             down[ns-1] = std::max(1.0, std::floor(tg * ns - Q * tg));
@@ -457,7 +400,8 @@ int Cepstrum::dtw(std::vector<std::vector<double>> Cx, std::vector<std::vector<s
 				temp.push_back(g(ns - 1, nw - 1) + 2 * dd);
                 temp.push_back(g(ns, nw - 1) + dd); //DO TYCH TEMPÓW WRZUCA ZAR?BI?CIE!!!! PÓ?NIEJ SI? TROSZK? ROZJE?D?A
                 std::vector<double>::iterator result = std::min_element(std::begin(temp), std::end(temp));
-                g(ns, nw) = static_cast<double>(std::distance(std::begin(temp), result));
+                double minimumResult = *result;
+                g(ns, nw) = minimumResult;
 			}
 		}
         glob.push_back((g(Ns - 1, Nw - 1) / std::sqrt(std::pow((Ns), 2.0) + std::pow((Nw), 2.0))));
@@ -480,6 +424,8 @@ bool Cepstrum::loadPatterns()
     bool res = (patterns.empty() == false) ? true : false;
     return res;
 }
+
+std::vector<std::vector<std::vector<double>>> Cepstrum::Cwzr;
 
 std::vector<std::vector<std::vector<double>>> Cepstrum::extractCwzrFromPatterns( std::vector<std::tuple<std::vector<std::vector<double>>, int>> patterns)
 {
@@ -505,9 +451,11 @@ std::vector<std::vector<std::vector<double>>> Cepstrum::extractCwzrFromPatterns(
         }
         Cwzr.push_back(onePattern);
     }
+    Cepstrum::Cwzr = Cwzr;
     return Cwzr;
 }
 
+std::vector<int> Cepstrum::Nwzr;
 
 std::vector<int> Cepstrum::extractNwzrFromCwzr(std::vector<std::vector<std::vector<double>>> Cwzr)
 {
@@ -517,6 +465,7 @@ std::vector<int> Cepstrum::extractNwzrFromCwzr(std::vector<std::vector<std::vect
     {
         Nwzr.push_back(Cwzr[i].size());
     }
+    Cepstrum::Nwzr = Nwzr;
     return Nwzr;
 }
 
@@ -599,7 +548,7 @@ std::vector<double> Cepstrum::silence(std::vector<double> signal, int fpr)
 }
 
 double Cepstrum::sum = 0.0;
-double Cepstrum::calculateSquareErrorSum(std::vector<double> Cx, std::vector<std::vector<double>> Cwzr, int ns, int Np, int nw, int numberWzorca)
+double Cepstrum::calculateSquareErrorSum(std::vector<double> & Cx, std::vector<std::vector<double>> & Cwzr, int ns, int Np, int nw, int numberWzorca)
 {
     //std::vector<double> substracts;
     sum = 0.0;

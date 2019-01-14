@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>398</width>
-    <height>565</height>
+    <height>588</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,6 +15,13 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
+    <item row="4" column="0">
+     <widget class="QLabel" name="labelChosenFile">
+      <property name="text">
+       <string>Chosen file:</string>
+      </property>
+     </widget>
+    </item>
     <item row="3" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -459,6 +466,13 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="labelCurrentSelection">
+      <property name="text">
+       <string>Current selection:</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

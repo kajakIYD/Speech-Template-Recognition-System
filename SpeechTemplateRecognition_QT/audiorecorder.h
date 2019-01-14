@@ -119,6 +119,20 @@ private:
 
     double SimulateInertia(double control);
 
+    enum UpDown {up, down};
+    UpDown changeUpDown;
+
+    enum GoStop {go, stop};
+    GoStop change;
+
+    enum SelectMode {zero, one, two, three, four, five};
+    int currentSelection = zero;
+
+    void reactOnDetectedWord(std::string detectedWord);
+
+    void changeSimulationParameters(GoStop change);
+
+
     Ui::AudioRecorder *ui = nullptr;
 
     QAudioRecorder *m_audioRecorder = nullptr;
@@ -128,6 +142,8 @@ private:
     QUrl pathToRecordToAnalyze;
 
     QString regulatorText;
+    QString str;
+
 
     QTimer* timer;
 

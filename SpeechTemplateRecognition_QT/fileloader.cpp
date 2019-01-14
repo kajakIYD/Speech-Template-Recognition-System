@@ -19,14 +19,16 @@ std::vector<std::tuple<std::vector<std::vector<double>>, int>> FileLoader::loadP
 {
     std::vector<std::tuple<std::string, int>> patterns =
     {
-        //std::make_tuple("zero", 0),
-        //std::make_tuple("one", 1),
-//        std::make_tuple("two", 2),
-        //std::make_tuple("three", 3),
-//        std::make_tuple("start", 11)
         std::make_tuple("ZeroMowa", 0),
         std::make_tuple("OneMowa", 1),
-        std::make_tuple("TwoMowa", 2)
+        std::make_tuple("TwoMowa", 2),
+        std::make_tuple("ThreeMowa", 3),
+        std::make_tuple("FourMowa", 4),
+        std::make_tuple("FiveMowa", 5),
+        std::make_tuple("LeftMowa", 9),
+        std::make_tuple("RightMowa", 10),
+        std::make_tuple("StartMowa", 11),
+        std::make_tuple("StopMowa", 12)
     };
 
     std::vector<std::tuple<std::vector<std::vector<double>>, int>> result;
@@ -69,5 +71,6 @@ std::vector<std::tuple<std::vector<std::vector<double>>, int>> FileLoader::loadP
         }
 
     }
+    patternsLoaded = result;
     return result;
 }

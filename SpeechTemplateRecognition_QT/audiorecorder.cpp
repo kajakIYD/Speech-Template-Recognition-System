@@ -343,7 +343,9 @@ void AudioRecorder::setOutputLocation()
     QString fileName = QFileDialog::getSaveFileName();
 #endif
     outputLocation = QUrl::fromLocalFile(fileName);
+    pathToRecordToAnalyze = outputLocation;
     m_audioRecorder->setOutputLocation(outputLocation);
+    ui->labelChosenFile->setText("Chosen file: " + outputLocation.toString());
     m_outputLocationSet = true;
 }
 
@@ -483,7 +485,7 @@ void AudioRecorder::processBuffer(const QAudioBuffer& buffer)
 
 void AudioRecorder::on_playButton_clicked()
 {
-    if (m_outputLocationSet && m_recordMade)
+    if (m_outputLocationSet && m_recordMade || (m_analyzeLocationSet))
     {
         QMediaPlayer* player = new QMediaPlayer;
         // ...
@@ -517,6 +519,9 @@ void AudioRecorder::on_locateRecordToAnalyzeButton_clicked()
     QString fileName = QFileDialog::getOpenFileName();
 #endif
     pathToRecordToAnalyze = QUrl::fromLocalFile(fileName);
+    outputLocation = QUrl::fromLocalFile(fileName);
+    ui->labelChosenFile->setText("Chosen file: " + outputLocation.toString());
+    m_outputLocationSet = true;
     m_analyzeLocationSet = true;
 
 }
@@ -548,6 +553,45 @@ void AudioRecorder::on_calculateCepstrumButton_clicked()
 
         std::cout << cepstrum.detectedNumber << std::endl;
 
+        QString detectedWord;
+
+        switch (cepstrum.detectedNumber)
+        {
+            case 0:
+                detectedWord = "zero";
+                break;
+            case 1:
+                detectedWord = "one";
+                break;
+            case 2:
+                detectedWord = "two";
+                break;
+            case 3:
+                detectedWord = "three";
+                break;
+            case 4:
+                detectedWord = "four";
+            case 6:
+                detectedWord = "five";
+            case 9:
+                detectedWord = "left";
+            case 10:
+                detectedWord = "right";
+                break;
+            case 11:
+                detectedWord = "start";
+                break;
+            case 12:
+                detectedWord = "stop";
+                break;
+            default:
+                break;
+        }
+
+        reactOnDetectedWord(detectedWord.toStdString());
+
+        ui->detectedNumberLabel->setText(detectedWord);
+
         m_analyzeLocationSet = false;
     }
     else
@@ -576,14 +620,143 @@ void AudioRecorder::on_runNeuralNetworkButton_clicked()
     {
         std::string command = pathToRecordToAnalyze.path().toStdString();
         command = command.substr(1, command.length()-1);
-        command = "python label_wav.py --graph=C:/tmp/my_frozen_graph.pb --labels=C:/tmp/speech_commands_train/conv_labels.txt --wav=" + command;
+        std::string graphPath = "C:/tmp/my_frozen_graph.pb";
+        std::string labelsPath = "C:/tmp/speech_commands_train/conv_labels.txt";
+        command = "python label_wav.py --graph=" + graphPath + " --labels=" + labelsPath + " --wav=" + command;
         std::system(command.c_str());
-        std::tuple<std::string, double> annResult = annresultparser::parseANNResult();
-        QString detectedWord = QString::fromStdString(std::get<0>(annResult) + " " + boost::lexical_cast<std::string>(std::get<1>(annResult)));
+        std::vector<std::tuple<std::string, double>> annResultVec = annresultparser::parseANNResult();
+        std::tuple<std::string, double> annResult = annresultparser::pickAnnResult(annResultVec);
+        reactOnDetectedWord(std::get<0>(annResult));
+        std::string numRes = boost::lexical_cast<std::string>(std::get<1>(annResult));
+        numRes = numRes.substr(0, 3);
+        QString detectedWord = QString::fromStdString(std::get<0>(annResult) + " " + numRes);
         ui->detectedNumberLabel->setText(detectedWord);
     }
     else
     {
         std::cout << "Set file to analyze location firstly!" << std::endl;
+    }
+}
+
+void AudioRecorder::reactOnDetectedWord(std::string detectedWord)
+{
+    if (detectedWord == "go")
+    {
+        change = go;
+        changeSimulationParameters(change);
+    }
+    else if (detectedWord == "start")
+    {
+        change = go;
+        changeSimulationParameters(change);
+    }
+    else if (detectedWord == "stop")
+    {
+        change = stop;
+        changeSimulationParameters(change);
+    }
+    else if (detectedWord == "zero")
+    {
+        currentSelection = zero;
+    }
+    else if (detectedWord == "one")
+    {
+        currentSelection = one;
+    }
+    else if (detectedWord == "two")
+    {
+        currentSelection = two;
+    }
+    else if (detectedWord == "three")
+    {
+        currentSelection = three;
+    }
+    else if (detectedWord == "four")
+    {
+        currentSelection = four;
+    }
+    else if (detectedWord == "five")
+    {
+        currentSelection = five;
+    }
+    else if (detectedWord == "up")
+    {
+        currentSelection++;
+        currentSelection %= 5;
+    }
+    else if (detectedWord == "down")
+    {
+        currentSelection--;
+        if (currentSelection < 0)
+        {
+            currentSelection = 4;
+        }
+        currentSelection %= 5;
+    }
+    else if (detectedWord == "left")
+    {
+        currentSelection = zero;
+    }
+    else if (detectedWord == "right")
+    {
+        currentSelection = zero;
+    }
+    else
+    {
+        ui->labelCurrentSelection->setText("Current selection: " + str + " ||unable to recognize speech correctly||");
+        return;
+    }
+
+    switch (currentSelection) {
+    case 0:
+        str = "0 (Start)";
+        break;
+    case 1:
+        str = "1 (Stop)";
+        break;
+    case 2:
+        str = "2 (SP)";
+        break;
+    case 3:
+        str = "3 (Gain)";
+        break;
+    case 4:
+        str = "4 (Regulator)";
+        break;
+    default:
+        str = "Unknown";
+        break;
+    }
+    ui->labelCurrentSelection->setText("Current selection: " + str);
+}
+
+
+void AudioRecorder::changeSimulationParameters(GoStop change)
+{
+    int valueChange;
+    valueChange = (change == go) ? 1 : 0;
+    switch(currentSelection) {
+    case zero:
+        if (valueChange == 1)
+            on_startButton_clicked(true);
+        break;
+    case one:
+        if (valueChange == 1)
+            on_stopButton_clicked(true);
+        break;
+    case two:
+        //Change SP
+        ui->spinBoxSP->setValue(ui->spinBoxSP->value() + valueChange);
+        break;
+    case three:
+        //Change gain
+        ui->spinBoxGain->setValue(ui->spinBoxGain->value() + valueChange);
+        break;
+    case four:
+        //Change regulator
+        ui->regulatorComboBox->setCurrentIndex(valueChange);
+        break;
+    default:
+        break;
     }
 }
