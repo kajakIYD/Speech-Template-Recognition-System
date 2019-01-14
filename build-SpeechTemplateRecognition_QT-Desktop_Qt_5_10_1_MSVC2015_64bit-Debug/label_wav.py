@@ -73,8 +73,11 @@ def run_graph(wav_data, labels, input_layer_name, output_layer_name,
       human_string = labels[node_id]
       score = predictions[node_id]
       print('%s (score = %.5f)' % (human_string, score))
-
-    return labels[top_k[0]], predictions[top_k[0]]
+    result = []
+    result.append([labels[top_k[0]], predictions[top_k[0]]])
+    result.append([labels[top_k[1]], predictions[top_k[1]]])
+    result.append([labels[top_k[2]], predictions[top_k[2]]])
+  return result
 
 
 def label_wav(wav, labels, graph, input_name, output_name, how_many_labels):
@@ -96,11 +99,14 @@ def label_wav(wav, labels, graph, input_name, output_name, how_many_labels):
   print(wav)
   with open(wav, 'rb') as wav_file:
     wav_data = wav_file.read()
-    human_string, score = run_graph(wav_data, labels_list, input_name, output_name, how_many_labels)
+	# human_string, score
+    labels = run_graph(wav_data, labels_list, input_name, output_name, how_many_labels)
 
-  content = str(human_string) + ";" + str(score)
   file = open("results.txt", 'w')
-  file.write(str(content))
+  for human_string, score in labels:
+    content = str(human_string) + ";" + str(score) + '\n'
+    file.write(str(content))
+  
   file.close()
 
 
