@@ -6,3 +6,6 @@ Matching speech templates is implemented in both python and C++. On the python s
 
 ## Multiplatform
 Whole project has also its Raspberry Pi 3B+ version. Cross compilation allows to make the code easily (huh, I must admit that configuration of cross compilation was not so easy:D) portable.
+
+## Additional information
+https://github.com/kajakIYD/Speech-Template-Recognition-System/blob/master/README.pdf
