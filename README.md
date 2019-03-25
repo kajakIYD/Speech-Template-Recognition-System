@@ -10,12 +10,13 @@ Whole project has also its **Raspberry Pi 3B+** version. Cross compilation allow
 
 ## Brief insight
 Front panel of the application looks as shown below:
-[!Cepstrum_NN_Tab](https://github.com/kajakIYD/Speech-Template-Recognition-System/blob/master/DocumentationImages/Cepstrum_NN_Tab.png)
-[!Play_Record_Tab](https://github.com/kajakIYD/Speech-Template-Recognition-System/blob/master/DocumentationImages/Play_Record_Tab.png)
+![Cepstrum_NN_Tab](https://github.com/kajakIYD/Speech-Template-Recognition-System/blob/master/DocumentationImages/Cepstrum_NN_Tab.png)
+![Play_Record_Tab](https://github.com/kajakIYD/Speech-Template-Recognition-System/blob/master/DocumentationImages/Play_Record_Tab.png)
 <br>
 Learning process looks like shown below:
 <br>
-[!Learning_Process](https://github.com/kajakIYD/Speech-Template-Recognition-System/blob/master/DocumentationImages/Learning_Process.png)
+![Learning_Process](https://github.com/kajakIYD/Speech-Template-Recognition-System/blob/master/DocumentationImages/Learning_Process.png)
 
 ## Additional information
+Algorithms description, neural network structure description and other aspects are covered in document
 https://github.com/kajakIYD/Speech-Template-Recognition-System/blob/master/README.pdf
