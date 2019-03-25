@@ -1,5 +1,5 @@
 # Speech-Template-Recognition-System
-Multiplatform project, which main goal is to detect speech templates like "one", "two", "start", "stop"
+Multiplatform project, which main goal is to detect speech templates like "one", "two", "start", "stop" to control simulated dynamic object - first-order-inertia.
 
 ## Algorithms and technologies
 Matching speech templates is implemented in both python and C++. On the **Python** side multilayer artificial neural network does the trick. It is implemented with the usage of **Keras** and **Tensorflow**. On the other side (C++ side :) all the magic is the algorithm that computes cepstral coefficients (described in Cyfrowe Przetwarzanie Sygnałów, Tomasz P. Zieliński, WKŁ Warszawa 2007).
